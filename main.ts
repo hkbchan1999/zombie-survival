@@ -1,12 +1,51 @@
+game.onUpdateInterval(500, function() {
+    let zombies=sprites.allOfKind(SpriteKind.Enemy)
+    let randomznumber=randint(0, zombies.length - 1)   
+    let randomzombie=zombies[randomznumber] 
+
+    let randomsnumber=randint(0, zombieSounds.length - 1)
+    let randomSound=zombieSounds[randomsnumber]
+
+    randomzombie.say(randomSound,3000)
+})
 function addZombie () {
     anyZombie = randint(0, zombieImgs.length - 1)
     zombie = sprites.create(zombieImgs[anyZombie], SpriteKind.Enemy)
     zombie.follow(oldLady, 5)
     tiles.placeOnRandomTile(zombie, sprites.castle.tilePath5)
 }
+info.onCountdownEnd(function () {
+    wavenumber = wavenumber + 1
+    if (wavenumber == 4) {
+        game.over(true)
+    }
+    game.splash("There are more zombies", "coming to kill you!")
+    nextwave()
+})
+function nextwave () {
+    info.startCountdown(6)
+    if (wavenumber == 1) {
+        addZombie()
+        addZombie()
+        addZombie()
+    } else if (wavenumber == 2) {
+        addZombie()
+        addZombie()
+    } else if (wavenumber == 3) {
+        for (let index = 0; index < 3; index++) {
+            addZombie()
+        }
+    }
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    game.splash("You are dead")
+    game.over(false)
+})
 let zombie: Sprite = null
 let anyZombie = 0
+let wavenumber = 0
 let zombieImgs: Image[] = []
+let zombieSounds = ["You are going to get killed!", "Dieeeeeee!", "I want to eat your brain!"]
 zombieImgs = [
 img`
     ...cccccccccccccc...
@@ -313,27 +352,5 @@ img`
 ]
 scene.setBackgroundColor(7)
 tiles.setTilemap(tilemap`level_1`)
-function nextwave() {
-
-
-let wavenumber=1
-if ( wavenumber==1){
-
-addZombie()
-addZombie()
-addZombie()
-
-
-}else if ( wavenumber==2){
-
-addZombie()
-addZombie()
-
-}
-}
-nextwave() 
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function(sprite: Sprite, otherSprite: Sprite) {
-    
-    game.splash("you are dead")
-    game.over(false)
-})
+nextwave()
+wavenumber = 1
